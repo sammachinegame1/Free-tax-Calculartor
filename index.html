@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจำลองภาษีบุคคลธรรมดา (Mobile Responsive)</title>
+    <title>ระบบจำลองภาษีบุคคลธรรมดา (Accounting Format)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f7f6; font-family: 'Sarabun', sans-serif; font-size: 0.95rem; }
         .card { border-radius: 10px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .nav-tabs .nav-link { color: #6c757d; font-weight: 500; white-space: nowrap; }
-        .nav-tabs { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; } /* เลื่อนแท็บแนวนอนได้บนมือถือ */
+        .nav-tabs { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; }
         .nav-tabs .nav-link.active { color: #0d6efd; font-weight: bold; border-bottom: 3px solid #0d6efd; background-color: #fff; }
         
         table { border-collapse: collapse; width: 100%; background: #fff; }
@@ -17,36 +17,21 @@
         td { border: 1px solid #e0e0e0; padding: 0 !important; vertical-align: middle; }
         td.label-cell { padding: 8px 12px !important; background-color: #fafafa; }
         
+        /* ช่องกรอกข้อมูล ปรับเป็น type text เพื่อให้ใส่ comma ได้ */
         input.sheet-input { width: 100%; border: none; background: transparent; text-align: right; color: #0d6efd; font-weight: bold; padding: 8px 12px; outline: none; }
         input.sheet-input:focus { background-color: #e9f2ff; }
         .formula-cell { color: #dc3545; font-weight: bold; text-align: right; padding: 8px 12px !important; background-color: #f8f9fa; }
-        .tooltip-icon { color: #6c757d; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
         .disclaimer { font-size: 0.85rem; color: #856404; background-color: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 20px; }
 
-        /* --- 1. ตารางรายได้รายเดือน (ตรึงหัวตารางและคอลัมน์แรก) --- */
-        .table-monthly-wrapper {
-            max-height: 65vh; 
-            overflow: auto; 
-            border: 1px solid #ccc;
-        }
+        .table-monthly-wrapper { max-height: 65vh; overflow: auto; border: 1px solid #ccc; }
         .table-monthly-wrapper table { white-space: nowrap; }
-        .table-monthly-wrapper th {
-            position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0px #ccc;
-        }
-        /* ตรึงคอลัมน์เดือน (ซ้ายสุด) */
-        .table-monthly-wrapper td:first-child {
-            position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0px #ccc;
-        }
-        .table-monthly-wrapper th:first-child {
-            position: sticky; left: 0; z-index: 3; box-shadow: 1px 1px 0px #ccc;
-        }
+        .table-monthly-wrapper th { position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0px #ccc; }
+        .table-monthly-wrapper td:first-child { position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0px #ccc; }
+        .table-monthly-wrapper th:first-child { position: sticky; left: 0; z-index: 3; box-shadow: 1px 1px 0px #ccc; }
 
-        /* --- 2. ตารางลดหย่อน (บีบอัดพอดีจอ ไม่ต้องเลื่อนซ้ายขวา) --- */
-        .table-deduction { white-space: normal; } /* ยอมให้ข้อความขึ้นบรรทัดใหม่ */
+        .table-deduction { white-space: normal; }
         .table-deduction td.label-cell { line-height: 1.3; font-size: 0.9rem; }
-        .table-deduction input.sheet-input { min-width: 100px; } /* ล็อกขนาดช่องกรอกให้พอกดนิ้วได้ */
-        
-        /* ไฮไลท์ขั้นบันได */
+        .table-deduction input.sheet-input { min-width: 100px; }
         .bracket-active { background-color: #fff3cd !important; font-weight: bold; color: #856404; }
     </style>
 </head>
@@ -55,7 +40,6 @@
     <h5 class="text-center mb-3" style="color: #2c3e50;">📊 แบบจำลองภาษีเงินได้</h5>
     
     <div class="card p-2 p-md-3">
-        <!-- แท็บเลื่อนแนวนอนได้ -->
         <ul class="nav nav-tabs mb-3" id="taxTabs" role="tablist">
             <li class="nav-item"><button class="nav-link active" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab">1. รายรับ & ภาษี</button></li>
             <li class="nav-item"><button class="nav-link" id="deduction-tab" data-bs-toggle="tab" data-bs-target="#deduction" type="button" role="tab">2. ลดหย่อนภาษี</button></li>
@@ -63,10 +47,8 @@
         </ul>
 
         <div class="tab-content" id="taxTabsContent">
-            
             <!-- แท็บที่ 1: รายได้รายเดือน -->
             <div class="tab-pane fade show active" id="income" role="tabpanel">
-                <p class="text-muted small mb-2">💡 เลื่อนตารางดูซ้าย-ขวา / ขึ้น-ลง ได้</p>
                 <div class="table-monthly-wrapper">
                     <table class="table table-bordered mb-0" id="monthlyTable">
                         <thead>
@@ -85,7 +67,7 @@
                         <tbody id="monthlyRows"></tbody>
                         <tfoot>
                             <tr>
-                                <td class="label-cell fw-bold text-end">รวม</td>
+                                <td class="label-cell fw-bold text-end">รวม (บาท)</td>
                                 <td class="formula-cell" id="sumInc1">0.00</td>
                                 <td class="formula-cell" id="sumOT">0.00</td>
                                 <td class="formula-cell" id="sumInc2">0.00</td>
@@ -107,27 +89,27 @@
                         <thead>
                             <tr>
                                 <th style="text-align: left; padding-left: 10px;">รายการลดหย่อนภาษี</th>
-                                <th style="width: 120px;">จำนวนเงิน (บาท)</th>
+                                <th style="width: 130px;">จำนวนเงิน (บาท)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr><td class="label-cell">ค่าลดหย่อนส่วนตัว</td><td class="formula-cell">60,000.00</td></tr>
-                            <tr><td class="label-cell">คู่สมรสไม่มีรายได้</td><td><input type="number" class="sheet-input ded-input" id="dedSpouse" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">บุตร (คนละ 30,000 บาท)</td><td><input type="number" class="sheet-input ded-input" id="dedChild" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">อุปการะบิดามารดา (คนละ 30,000 บาท)</td><td><input type="number" class="sheet-input ded-input" id="dedParent" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">เบี้ยประกันชีวิต (สูงสุด 100,000)</td><td><input type="number" class="sheet-input ded-input" id="dedLife" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">เบี้ยประกันสุขภาพ (สูงสุด 25,000)</td><td><input type="number" class="sheet-input ded-input" id="dedHealth" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">กองทุนสำรองเลี้ยงชีพ / กบข.</td><td><input type="number" class="sheet-input ded-input" id="dedProv" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">กองทุน RMF</td><td><input type="number" class="sheet-input ded-input" id="dedRMF" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">กองทุน SSF</td><td><input type="number" class="sheet-input ded-input" id="dedSSF" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">กองทุน Thai ESG</td><td><input type="number" class="sheet-input ded-input" id="dedESG" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">ดอกเบี้ยกู้ยืมเพื่อที่อยู่อาศัย (สูงสุด 100,000)</td><td><input type="number" class="sheet-input ded-input" id="dedHome" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">เงินบริจาค 2 เท่า (การศึกษา/โรงพยาบาลรัฐ)</td><td><input type="number" class="sheet-input ded-input" id="dedDonation2" value="0" oninput="calc()"></td></tr>
-                            <tr><td class="label-cell">เงินบริจาคทั่วไป</td><td><input type="number" class="sheet-input ded-input" id="dedDonation1" value="0" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">คู่สมรสไม่มีรายได้</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedSpouse" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">บุตร (คนละ 30,000 บาท)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedChild" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">อุปการะบิดามารดา (คนละ 30,000 บาท)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedParent" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">เบี้ยประกันชีวิต (สูงสุด 100,000)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedLife" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">เบี้ยประกันสุขภาพ (สูงสุด 25,000)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedHealth" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">กองทุนสำรองเลี้ยงชีพ / กบข.</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedProv" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">กองทุน RMF</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedRMF" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">กองทุน SSF</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedSSF" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">กองทุน Thai ESG</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedESG" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">ดอกเบี้ยกู้ยืมเพื่อที่อยู่อาศัย (สูงสุด 100,000)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedHome" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">เงินบริจาค 2 เท่า (การศึกษา/โรงพยาบาลรัฐ)</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedDonation2" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
+                            <tr><td class="label-cell">เงินบริจาคทั่วไป</td><td><input type="text" inputmode="decimal" class="sheet-input ded-input" id="dedDonation1" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td></tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td class="label-cell fw-bold text-end">รวมค่าลดหย่อนทั้งหมด</td>
+                                <td class="label-cell fw-bold text-end">รวมค่าลดหย่อนทั้งหมด (บาท)</td>
                                 <td class="formula-cell" id="sumDeductions">60,000.00</td>
                             </tr>
                         </tfoot>
@@ -142,17 +124,17 @@
                         <h6 class="text-primary fw-bold mb-2">สรุปเส้นทางเงินได้ของคุณ</h6>
                         <table class="table table-bordered table-sm table-deduction">
                             <tbody>
-                                <tr><td class="label-cell">1. รวมรายได้ทั้งหมด (Gross Income)</td><td class="formula-cell text-dark" id="resGross">0.00</td></tr>
+                                <tr><td class="label-cell">1. รวมรายได้ทั้งหมด (Gross Income)</td><td class="formula-cell text-dark" id="resGross">0.00 บาท</td></tr>
                                 <tr>
                                     <td class="label-cell">2. หัก ค่าใช้จ่ายตามกฎหมาย<br><small class="text-muted" id="expDetail"></small></td>
-                                    <td class="formula-cell text-dark" id="resExp">-0.00</td>
+                                    <td class="formula-cell text-dark" id="resExp">-0.00 บาท</td>
                                 </tr>
-                                <tr style="background-color: #e9ecef;"><td class="label-cell fw-bold">3. เงินได้หลังหักค่าใช้จ่าย</td><td class="formula-cell text-dark" id="resAfterExp">0.00</td></tr>
-                                <tr><td class="label-cell">4. หัก ค่าลดหย่อนรวม</td><td class="formula-cell text-dark" id="resDed">-60,000.00</td></tr>
-                                <tr><td class="label-cell">5. หัก เงินบริจาค (ตามเพดาน)</td><td class="formula-cell text-dark" id="resDon">-0.00</td></tr>
+                                <tr style="background-color: #e9ecef;"><td class="label-cell fw-bold">3. เงินได้หลังหักค่าใช้จ่าย</td><td class="formula-cell text-dark" id="resAfterExp">0.00 บาท</td></tr>
+                                <tr><td class="label-cell">4. หัก ค่าลดหย่อนรวม</td><td class="formula-cell text-dark" id="resDed">-60,000.00 บาท</td></tr>
+                                <tr><td class="label-cell">5. หัก เงินบริจาค (ตามเพดาน)</td><td class="formula-cell text-dark" id="resDon">-0.00 บาท</td></tr>
                                 <tr style="background-color: #cce5ff;">
                                     <td class="label-cell fw-bold text-primary">6. เงินได้สุทธิ</td>
-                                    <td class="formula-cell text-primary" style="font-size: 1.1rem;" id="resNet">0.00</td>
+                                    <td class="formula-cell text-primary" style="font-size: 1.1rem;" id="resNet">0.00 บาท</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -169,7 +151,7 @@
                 <h6 class="text-success fw-bold mb-2">ตารางคำนวณขั้นบันไดภาษี</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm text-center" style="font-size: 0.85rem;">
-                        <thead><tr><th>ช่วงเงินได้สุทธิ (บาท)</th><th>อัตรา</th><th>ภาษีขั้นนี้</th></tr></thead>
+                        <thead><tr><th>ช่วงเงินได้สุทธิ (บาท)</th><th>อัตรา</th><th>ภาษีขั้นนี้ (บาท)</th></tr></thead>
                         <tbody>
                             <tr id="row-b1"><td>0 - 150,000</td><td>ยกเว้น</td><td class="formula-cell text-dark" id="tax-b1">0.00</td></tr>
                             <tr id="row-b2"><td>150,001 - 300,000</td><td>5%</td><td class="formula-cell text-dark" id="tax-b2">0.00</td></tr>
@@ -181,7 +163,7 @@
                             <tr id="row-b8"><td>5,000,001 ขึ้นไป</td><td>35%</td><td class="formula-cell text-dark" id="tax-b8">0.00</td></tr>
                         </tbody>
                         <tfoot>
-                            <tr><td colspan="2" class="fw-bold text-end">รวมภาษี</td><td class="formula-cell text-danger" id="totalCalcTax">0.00</td></tr>
+                            <tr><td colspan="2" class="fw-bold text-end">รวมภาษี</td><td class="formula-cell text-danger" id="totalCalcTax">0.00 บาท</td></tr>
                         </tfoot>
                     </table>
                 </div>
@@ -201,25 +183,44 @@
     months.forEach(m => {
         html += `<tr>
             <td class="label-cell text-center">${m}</td>
-            <td><input type="number" class="sheet-input m-inc1" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-ot" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-inc2" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-inc4" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-inc5" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-inc6" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-soc" value="0" oninput="calc()"></td>
-            <td><input type="number" class="sheet-input m-tax" value="0" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-inc1" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-ot" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-inc2" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-inc4" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-inc5" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-inc6" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-soc" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
+            <td><input type="text" inputmode="decimal" class="sheet-input m-tax" value="0.00" onfocus="unformatInput(this)" onblur="formatInput(this)" oninput="calc()"></td>
         </tr>`;
     });
     document.getElementById("monthlyRows").innerHTML = html;
 
+    // ฟังก์ชันจัดการจุลภาค (Comma) และจุดทศนิยม
+    function parseVal(str) {
+        if (!str) return 0;
+        let num = parseFloat(str.toString().replace(/,/g, ''));
+        return isNaN(num) ? 0 : num;
+    }
+    function fmt(num) { 
+        return num.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}); 
+    }
+    function formatInput(el) {
+        el.value = fmt(parseVal(el.value));
+        calc();
+    }
+    function unformatInput(el) {
+        let val = parseVal(el.value);
+        el.value = val === 0 ? '' : val;
+    }
+
     function getSum(className) {
         let sum = 0;
-        document.querySelectorAll(className).forEach(el => sum += parseFloat(el.value) || 0);
+        document.querySelectorAll(className).forEach(el => sum += parseVal(el.value));
         return sum;
     }
-    function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
-    function fmt(num) { return num.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+    function getVal(id) { 
+        return parseVal(document.getElementById(id).value); 
+    }
 
     function calc() {
         let inc1 = getSum('.m-inc1'), ot = getSum('.m-ot'), inc2 = getSum('.m-inc2');
@@ -263,13 +264,13 @@
         
         let netIncome = Math.max(0, netBeforeDon - totalDonAllow);
 
-        document.getElementById('resGross').innerText = fmt(grossIncome);
-        document.getElementById('resExp').innerText = "-" + fmt(totalExpense);
+        document.getElementById('resGross').innerText = fmt(grossIncome) + " บาท";
+        document.getElementById('resExp').innerText = "-" + fmt(totalExpense) + " บาท";
         document.getElementById('expDetail').innerText = `(1&2: ${fmt(expense12)} | 5: ${fmt(expense5)} | 6: ${fmt(expense6)})`;
-        document.getElementById('resAfterExp').innerText = fmt(afterExp);
-        document.getElementById('resDed').innerText = "-" + fmt(totalDed);
-        document.getElementById('resDon').innerText = "-" + fmt(totalDonAllow);
-        document.getElementById('resNet').innerText = fmt(netIncome);
+        document.getElementById('resAfterExp').innerText = fmt(afterExp) + " บาท";
+        document.getElementById('resDed').innerText = "-" + fmt(totalDed) + " บาท";
+        document.getElementById('resDon').innerText = "-" + fmt(totalDonAllow) + " บาท";
+        document.getElementById('resNet').innerText = fmt(netIncome) + " บาท";
 
         let brackets = [
             { id: 1, min: 0, max: 150000, rate: 0 }, { id: 2, min: 150000, max: 300000, rate: 0.05 },
@@ -295,16 +296,16 @@
             }
         });
 
-        document.getElementById('totalCalcTax').innerText = fmt(totalTax);
+        document.getElementById('totalCalcTax').innerText = fmt(totalTax) + " บาท";
 
         let finalDiff = totalTax - wht;
         let textResult = "";
         if (finalDiff < 0) {
-            textResult = "ได้เงินคืน 🟢 " + fmt(Math.abs(finalDiff));
+            textResult = "ได้เงินคืน 🟢 " + fmt(Math.abs(finalDiff)) + " บาท";
         } else if (finalDiff > 0) {
-            textResult = "ชำระเพิ่ม 🔴 " + fmt(finalDiff);
+            textResult = "ชำระเพิ่ม 🔴 " + fmt(finalDiff) + " บาท";
         } else {
-            textResult = "0.00 (พอดี)";
+            textResult = "0.00 บาท (พอดี)";
         }
         
         document.getElementById('finalTaxString').innerText = textResult;
